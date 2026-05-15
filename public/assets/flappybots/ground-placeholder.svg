@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 80" preserveAspectRatio="none" role="img" aria-label="Tech ground placeholder">
+  <rect width="960" height="80" fill="#0d1728"/>
+  <path d="M0 4h960" stroke="#45f0ff" stroke-width="4" opacity=".5"/>
+  <g stroke="#ffcf5f" stroke-opacity=".32" stroke-width="2">
+    <path d="M0 80 44 8M92 80l44-72M184 80l44-72M276 80l44-72M368 80l44-72M460 80l44-72M552 80l44-72M644 80l44-72M736 80l44-72M828 80l44-72M920 80l44-72"/>
+  </g>
+</svg>

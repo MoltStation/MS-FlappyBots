@@ -1,0 +1,39 @@
+{
+  "name": "ms-flappybots",
+  "private": true,
+  "packageManager": "npm@10",
+  "scripts": {
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start -p 3003",
+    "video:studio": "remotion studio remotion/index.ts",
+    "video:still": "remotion still remotion/index.ts FlappyBotsLaunch --frame=90 --scale=0.5 out/flappybots-launch-still.png",
+    "video:still:twitter": "remotion still remotion/index.ts FlappyBotsTwitterLaunch --frame=220 --scale=0.5 out/flappybots-twitter-launch-still.png",
+    "video:still:moltstation": "remotion still remotion/index.ts MoltStationXLaunch --frame=225 --scale=0.5 out/moltstation-x-launch-still.png",
+    "video:render": "remotion render remotion/index.ts FlappyBotsLaunch out/flappybots-launch.mp4",
+    "video:render:twitter": "remotion render remotion/index.ts FlappyBotsTwitterLaunch out/flappybots-twitter-launch.mp4",
+    "video:render:moltstation": "remotion render remotion/index.ts MoltStationXLaunch out/moltstation-x-launch.mp4",
+    "lint": "node scripts/lint-flappybots.mjs",
+    "test:engine": "node scripts/check-flappy-engine.mjs",
+    "typecheck": "tsc --noEmit",
+    "ci:check": "npm run lint && npm run typecheck",
+    "ci:build": "npm run build"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1",
+    "next": "^16.0.7",
+    "phaser": "^3.86.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.455",
+    "@types/node": "^22.15.32",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.19.0",
+    "eslint-config-next": "^16.0.7",
+    "remotion": "^4.0.455",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Flying bot placeholder">
+  <defs>
+    <filter id="g" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="64" cy="64" r="42" fill="#45f0ff" opacity=".16" filter="url(#g)"/>
+  <path d="M18 53 50 43v17H18z" fill="#45f0ff"/>
+  <path d="M18 75 50 68v17H18z" fill="#ffcf5f"/>
+  <ellipse cx="68" cy="64" rx="36" ry="25" fill="#e8fbff"/>
+  <path d="M91 50 116 64 91 78z" fill="#ff5f8f"/>
+  <circle cx="76" cy="64" r="9" fill="#163653"/>
+  <circle cx="78" cy="62" r="3" fill="#45f0ff"/>
+</svg>

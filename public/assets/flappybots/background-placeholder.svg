@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" preserveAspectRatio="none" role="img" aria-label="Sci-fi background placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset=".55" stop-color="#103b59"/>
+      <stop offset="1" stop-color="#102037"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <g stroke="#45f0ff" stroke-opacity=".16">
+    <path d="M0 88h960M0 176h960M0 264h960M0 352h960"/>
+    <path d="M80 0v540M190 0v540M320 0v540M510 0v540M720 0v540M860 0v540"/>
+  </g>
+  <g fill="#8ff7ff" opacity=".42">
+    <circle cx="90" cy="64" r="2"/><circle cx="214" cy="132" r="1.5"/><circle cx="560" cy="92" r="2"/>
+    <circle cx="780" cy="188" r="1.8"/><circle cx="880" cy="52" r="1.4"/>
+  </g>
+</svg>
