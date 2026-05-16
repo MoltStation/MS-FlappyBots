@@ -25,6 +25,16 @@ function resolveFrameAncestors() {
 module.exports = {
   reactStrictMode: true,
   ...(process.env.VERCEL ? {} : { distDir: '.next_local' }),
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'ms-flappybots.vercel.app' }],
+        destination: 'https://flappybots.moltstation.games/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     const frameAncestors = resolveFrameAncestors();
     return [
