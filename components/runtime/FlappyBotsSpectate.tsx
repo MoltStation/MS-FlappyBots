@@ -37,6 +37,7 @@ export default function FlappyBotsSpectate() {
   const [frame, setFrame] = useState<FlappyFrame | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const wsKeyRef = useRef(0);
+  const closingRef = useRef(false);
   const trustedParentOriginRef = useRef('');
   const readyNonceRef = useRef('');
 
@@ -84,7 +85,11 @@ export default function FlappyBotsSpectate() {
       const msgNonce = String((data as any).nonce ?? '').trim();
       if (!msgNonce || msgNonce !== readyNonceRef.current) return;
       if (!token || msgSessionId !== sessionId) return;
-      setHandshake({ token, sessionId: msgSessionId, slug });
+      setHandshake((prev) =>
+        prev?.token === token && prev?.sessionId === msgSessionId && prev?.slug === slug
+          ? prev
+          : { token, sessionId: msgSessionId, slug }
+      );
     }
 
     window.addEventListener('message', onMessage);
@@ -100,6 +105,7 @@ export default function FlappyBotsSpectate() {
     }
     setStatus('connecting');
     setError('');
+    closingRef.current = false;
     wsKeyRef.current += 1;
     const wsKey = wsKeyRef.current;
     const ws = new WebSocket(
@@ -130,7 +136,7 @@ export default function FlappyBotsSpectate() {
       setError('WebSocket error.');
     };
     ws.onclose = (evt) => {
-      if (wsKey !== wsKeyRef.current) return;
+      if (wsKey !== wsKeyRef.current || closingRef.current) return;
       const reason = String(evt?.reason || '').trim();
       if (TOKEN_RECOVERY_REASONS.has(reason)) {
         setStatus('connecting');
@@ -155,6 +161,7 @@ export default function FlappyBotsSpectate() {
       setError(reason ? `Disconnected: ${reason}` : 'Disconnected.');
     };
     return () => {
+      closingRef.current = true;
       try {
         ws.close();
       } catch {
