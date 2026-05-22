@@ -24,6 +24,8 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        <link rel="icon" type="image/png" href="/assets/flappybots/logo.png" />
+        <link rel="apple-touch-icon" href="/assets/flappybots/logo.png" />
         <script dangerouslySetInnerHTML={{ __html: extensionErrorGuard }} />
       </Head>
       <body>

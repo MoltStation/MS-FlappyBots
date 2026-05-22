@@ -77,18 +77,25 @@ body {
 
 .flappybots-panel {
   width: min(560px, 100%);
+  min-height: 360px;
   border-radius: 8px;
   padding: 24px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
 }
 
 .flappybots-panel h1 {
-  margin: 8px 0 10px;
+  margin: 0;
   font-size: 28px;
   line-height: 1.1;
 }
 
 .flappybots-panel p {
-  margin: 0 0 18px;
+  margin: 0;
+  max-width: 40ch;
   color: var(--fb-dim);
   line-height: 1.5;
 }
@@ -97,7 +104,7 @@ body {
   display: block;
   width: min(300px, 86%);
   height: auto;
-  margin: 0 0 10px;
+  margin: 0;
 }
 
 .flappybots-logo--hud {
