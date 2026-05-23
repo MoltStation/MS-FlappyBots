@@ -8,14 +8,8 @@ import type { FlappyFrame } from '../../lib/game/types';
 import { buildSpectateSocketUrl } from '../../lib/websocket/spectateSocket';
 import FlappyBotsCanvas from './FlappyBotsCanvas';
 
-const TOKEN_RECOVERY_REASONS = new Set([
-  'TOKEN_REPLAYED',
-  'TOKEN_EXPIRED',
-  'TOKEN_NOT_FOUND',
-  'INVALID_TOKEN',
-]);
+const TOKEN_RECOVERY_REASONS = new Set(['TOKEN_REPLAYED', 'TOKEN_EXPIRED', 'TOKEN_NOT_FOUND', 'INVALID_TOKEN']);
 const ALLOWED_PARENT_ORIGINS = resolveAllowedParentOrigins();
-const DEV_FRAME_LOG_LIMIT = 5;
 
 type SpectateHandshake = {
   token: string;
@@ -33,28 +27,6 @@ function resolveBootstrapParentOrigin() {
   }
 }
 
-function logDevFrame(frame: FlappyFrame | null, count: number) {
-  if (process.env.NODE_ENV !== 'development') return;
-  if (!frame) {
-    console.info('[flappybots.spectate] frame', { count, frame: null });
-    return;
-  }
-  console.info('[flappybots.spectate] frame', {
-    count,
-    tick: frame.tick,
-    phase: frame.phase,
-    bot: frame.bot ?? null,
-    obstacles: Array.isArray(frame.obstacles) ? frame.obstacles.length : 0,
-    entities: Array.isArray(frame.entities) ? frame.entities.length : 0,
-    score: frame.score ?? null,
-  });
-}
-
-function logDevClose(reason: string, code: number) {
-  if (process.env.NODE_ENV !== 'development') return;
-  console.info('[flappybots.spectate] websocket closed', { code, reason });
-}
-
 export default function FlappyBotsSpectate() {
   const router = useRouter();
   const sessionId = String(router.query?.sessionId ?? '').trim();
@@ -68,7 +40,6 @@ export default function FlappyBotsSpectate() {
   const closingRef = useRef(false);
   const trustedParentOriginRef = useRef('');
   const readyNonceRef = useRef('');
-  const loggedFrameCountRef = useRef(0);
 
   const apiBase = useMemo(() => resolveApiBase(), []);
   const wsBase = useMemo(() => resolveWsBaseFromApi(apiBase), [apiBase]);
@@ -135,7 +106,6 @@ export default function FlappyBotsSpectate() {
     setStatus('connecting');
     setError('');
     closingRef.current = false;
-    loggedFrameCountRef.current = 0;
     wsKeyRef.current += 1;
     const wsKey = wsKeyRef.current;
     const ws = new WebSocket(
@@ -155,14 +125,7 @@ export default function FlappyBotsSpectate() {
       if (wsKey !== wsKeyRef.current) return;
       try {
         const msg = JSON.parse(String(evt.data ?? ''));
-        if (msg?.t === 'frame') {
-          const nextFrame = (msg.frame ?? null) as FlappyFrame | null;
-          if (loggedFrameCountRef.current < DEV_FRAME_LOG_LIMIT) {
-            loggedFrameCountRef.current += 1;
-            logDevFrame(nextFrame, loggedFrameCountRef.current);
-          }
-          setFrame(nextFrame);
-        }
+        if (msg?.t === 'frame') setFrame(msg.frame ?? null);
       } catch {
         // ignore
       }
@@ -175,7 +138,6 @@ export default function FlappyBotsSpectate() {
     ws.onclose = (evt) => {
       if (wsKey !== wsKeyRef.current || closingRef.current) return;
       const reason = String(evt?.reason || '').trim();
-      logDevClose(reason, Number(evt?.code ?? 0));
       if (TOKEN_RECOVERY_REASONS.has(reason)) {
         setStatus('connecting');
         setError('Refreshing spectate token...');

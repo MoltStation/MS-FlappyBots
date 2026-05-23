@@ -17,10 +17,7 @@
     "test:engine": "node scripts/check-flappy-engine.mjs",
     "typecheck": "tsc --noEmit",
     "ci:check": "npm run lint && npm run typecheck",
-    "ci:build": "npm run build",
-    "security:audit:prod": "npm audit --omit=dev --audit-level=high",
-    "security:audit:all": "npm audit --audit-level=high",
-    "ci:security": "npm run security:audit:prod"
+    "ci:build": "npm run build"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

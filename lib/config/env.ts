@@ -6,13 +6,6 @@ export function resolveApiBase() {
   const protocol = String(window.location.protocol || 'https:');
   if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:4100';
   if (host.startsWith('game.')) return `${protocol}//api.${host.slice(5)}`;
-  if (
-    host === 'flappybots.moltstation.games' ||
-    host === 'ms-flappybots.vercel.app' ||
-    host.endsWith('.moltstation.games')
-  ) {
-    return 'https://api.moltstation.games';
-  }
   return '';
 }
 
@@ -25,7 +18,6 @@ export function resolveWsBaseFromApi(apiBase: string) {
 }
 
 export function resolveAllowedParentOrigins() {
-  const productionDefaults = ['https://moltstation.games', 'https://www.moltstation.games'];
   const configured = String(
     process.env.NEXT_PUBLIC_ALLOWED_PARENT_ORIGINS ||
       process.env.NEXT_PUBLIC_CORE_ALLOWED_ORIGINS ||
@@ -36,7 +28,7 @@ export function resolveAllowedParentOrigins() {
     .filter(Boolean);
   const isProd = String(process.env.NODE_ENV || '').trim().toLowerCase() === 'production';
   const localDefaults = isProd ? [] : ['http://127.0.0.1:3000', 'http://localhost:3000'];
-  return new Set([...productionDefaults, ...configured, ...localDefaults]);
+  return new Set([...configured, ...localDefaults]);
 }
 
 export function resolveCoreOriginFromQuery(fallback: string) {
