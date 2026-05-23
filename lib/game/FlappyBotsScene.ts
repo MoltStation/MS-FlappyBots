@@ -8,7 +8,7 @@ import {
   OBSTACLE_WIDTH,
   SCROLL_SPEED,
 } from './constants';
-import type { FlappyFrame } from './types';
+import type { FlappyFrame, FlappyObstacle } from './types';
 
 type PhaserLike = any;
 
@@ -34,7 +34,52 @@ const GROUND_TILE_WIDTH = 768;
 const GROUND_TILE_HEIGHT = 256;
 const GROUND_TILE_Y = FLOOR_Y - 99;
 
-function drawGateBody(scene: any, obstacle: FlappyFrame['obstacles'][number]) {
+function finiteNumber(value: unknown) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function resolveBotPose(frame: FlappyFrame) {
+  const bot = frame.bot;
+  const observation = frame.observation;
+  const pawn = frame.pawn;
+  const x = finiteNumber(bot?.x) ?? finiteNumber(pawn?.x) ?? BOT_X;
+  const y = finiteNumber(bot?.y) ?? finiteNumber(observation?.botY) ?? finiteNumber(pawn?.y);
+  const velocityY = finiteNumber(bot?.velocityY) ?? finiteNumber(observation?.botVelocityY) ?? 0;
+  const rotation = finiteNumber(bot?.rotation) ?? Math.max(-0.55, Math.min(0.9, velocityY / 640));
+
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return { x, y, rotation };
+}
+
+function resolveObstacles(frame: FlappyFrame): FlappyObstacle[] {
+  if (Array.isArray(frame.obstacles) && frame.obstacles.length > 0) {
+    return frame.obstacles;
+  }
+
+  const entities = Array.isArray(frame.entities) ? frame.entities : [];
+  return entities
+    .filter((entity) => entity && entity.k === 'obstacle')
+    .map((entity, index) => {
+      const gapTopY = finiteNumber(entity.gapTopY);
+      const gapBottomY = finiteNumber(entity.gapBottomY);
+      const x = finiteNumber(entity.x);
+      if (gapTopY === null || gapBottomY === null || x === null) {
+        return null;
+      }
+      return {
+        id: String(entity.id ?? `entity-gate-${index}`),
+        x,
+        gapCenterY: (gapTopY + gapBottomY) * 0.5,
+        gapTopY,
+        gapBottomY,
+        passed: false,
+      };
+    })
+    .filter((obstacle): obstacle is FlappyObstacle => Boolean(obstacle));
+}
+
+function drawGateBody(scene: any, obstacle: FlappyObstacle) {
   const gate = scene.add.container(obstacle.x, 0);
   const x = -OBSTACLE_WIDTH * 0.5;
 
@@ -66,7 +111,7 @@ function drawGateBody(scene: any, obstacle: FlappyFrame['obstacles'][number]) {
   return gate;
 }
 
-function drawGate(scene: any, obstacle: FlappyFrame['obstacles'][number]) {
+function drawGate(scene: any, obstacle: FlappyObstacle) {
   return drawGateBody(scene, obstacle);
 }
 
@@ -176,13 +221,18 @@ export function createFlappyBotsPhaserGame({
     const frame = getFrame();
     if (!frame) return;
     if (objects.bot) {
-      objects.bot.setPosition(frame.bot.x, frame.bot.y);
-      objects.bot.setRotation(frame.bot.rotation);
-      objects.bot.setAlpha(frame.phase === 'ended' ? 0.62 : 1);
+      const pose = resolveBotPose(frame);
+      objects.bot.setVisible(Boolean(pose));
+      if (pose) {
+        objects.bot.setPosition(pose.x, pose.y);
+        objects.bot.setRotation(pose.rotation);
+        objects.bot.setAlpha(frame.phase === 'ended' ? 0.62 : 1);
+        objects.bot.setDepth(24);
+      }
     }
 
     const nextIds = new Set<string>();
-    for (const obstacle of frame.obstacles) {
+    for (const obstacle of resolveObstacles(frame)) {
       nextIds.add(obstacle.id);
       let gate = objects.gates.get(obstacle.id);
       if (!gate) {

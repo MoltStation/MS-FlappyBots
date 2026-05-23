@@ -40,12 +40,16 @@ export type FlappyFrame = {
   sessionId?: string;
   tick: number;
   tMs: number;
-  phase: 'ready' | 'running' | 'ended';
-  bot: {
+  phase: 'ready' | 'running' | 'paused' | 'ended';
+  bot?: {
     x: number;
     y: number;
     velocityY: number;
     rotation: number;
+  };
+  pawn?: {
+    x: number;
+    y: number;
   };
   score: {
     current: number;
@@ -53,8 +57,15 @@ export type FlappyFrame = {
   };
   latestAction: AgentAction;
   gameOverReason?: GameOverReason;
-  observation: FlappyBotsObservation;
-  obstacles: FlappyObstacle[];
+  observation?: FlappyBotsObservation;
+  obstacles?: FlappyObstacle[];
+  entities?: Array<{
+    id?: string;
+    k?: string;
+    x?: number;
+    gapTopY?: number;
+    gapBottomY?: number;
+  }>;
   events: Array<{ t: string; [key: string]: string | number | boolean }>;
 };
 

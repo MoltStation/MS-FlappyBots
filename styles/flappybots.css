@@ -50,21 +50,6 @@ body {
   inset: 0;
 }
 
-.flappybots-dom-bot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 12;
-  background: url("/assets/flappybots/generated/bot.png") center / contain no-repeat;
-  filter: drop-shadow(0 0 10px rgba(69, 240, 255, 0.52));
-  pointer-events: none;
-  transform-origin: center;
-  transition:
-    opacity 120ms ease,
-    transform 45ms linear;
-  will-change: transform;
-}
-
 .flappybots-panel,
 .flappybots-hud {
   border: 1px solid var(--fb-line);

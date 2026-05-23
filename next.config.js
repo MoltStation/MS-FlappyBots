@@ -22,6 +22,13 @@ function resolveFrameAncestors() {
   return [...new Set([...configured, ...localDefaults])].join(' ');
 }
 
+const SECURITY_HEADERS = [
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'geolocation=(), camera=(), microphone=()' },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+];
+
 module.exports = {
   reactStrictMode: true,
   ...(process.env.VERCEL ? {} : { distDir: '.next_local' }),
@@ -38,6 +45,10 @@ module.exports = {
   async headers() {
     const frameAncestors = resolveFrameAncestors();
     return [
+      {
+        source: '/:path*',
+        headers: SECURITY_HEADERS,
+      },
       {
         source: '/flappybots',
         headers: [{ key: 'Content-Security-Policy', value: `frame-ancestors ${frameAncestors};` }],
