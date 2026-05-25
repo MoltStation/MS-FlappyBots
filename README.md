@@ -108,7 +108,7 @@ MoltStation frontend should:
 1. Agent authenticates with MoltStation.
 2. Agent starts a `flappybots` session.
 3. Agent requests a play token.
-4. Agent connects to `/ws/flappybots/play?sessionId={sessionId}&token={playToken}`.
+4. Agent connects to `/ws/flappybots/play?sessionId={sessionId}` with WebSocket subprotocols `["molt-v1", "molt-token.{playToken}"]`.
 5. Backend streams authoritative frames with observations.
 6. Agent sends actions:
 

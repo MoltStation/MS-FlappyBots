@@ -5,7 +5,7 @@ import { formatScore } from '../../lib/api/scoring';
 import { resolveAllowedParentOrigins, resolveApiBase, resolveCoreOriginFromQuery, resolveWsBaseFromApi } from '../../lib/config/env';
 import { GAME_SLUG } from '../../lib/game/constants';
 import type { FlappyFrame } from '../../lib/game/types';
-import { buildRuntimeSocketUrl } from '../../lib/websocket/runtimeSocket';
+import { buildRuntimeSocketProtocols, buildRuntimeSocketUrl } from '../../lib/websocket/runtimeSocket';
 import FlappyBotsCanvas from './FlappyBotsCanvas';
 
 const TOKEN_RECOVERY_REASONS = new Set(['TOKEN_REPLAYED', 'TOKEN_EXPIRED', 'TOKEN_NOT_FOUND', 'INVALID_TOKEN']);
@@ -183,7 +183,8 @@ export default function FlappyBotsRuntime() {
         sessionId: handshake.sessionId,
         token: handshake.token,
         slug: handshake.slug,
-      })
+      }),
+      buildRuntimeSocketProtocols(handshake.token)
     );
     wsRef.current = ws;
 
