@@ -1,4 +1,4 @@
-import { buildSessionWsProtocols, buildSessionWsUrl } from '../api/sessions';
+import { buildSessionWsAuthMessage, buildSessionWsUrl } from '../api/sessions';
 import { GAME_SLUG } from '../game/constants';
 
 export function buildSpectateSocketUrl({
@@ -15,6 +15,6 @@ export function buildSpectateSocketUrl({
   return buildSessionWsUrl({ wsBase, slug, mode: 'spectate', sessionId, token });
 }
 
-export function buildSpectateSocketProtocols(token: string) {
-  return buildSessionWsProtocols(token);
+export function buildSpectateSocketAuthMessage(token: string) {
+  return buildSessionWsAuthMessage(token);
 }

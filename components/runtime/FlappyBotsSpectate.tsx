@@ -5,7 +5,7 @@ import { formatScore } from '../../lib/api/scoring';
 import { resolveAllowedParentOrigins, resolveApiBase, resolveWsBaseFromApi } from '../../lib/config/env';
 import { GAME_SLUG } from '../../lib/game/constants';
 import type { FlappyFrame } from '../../lib/game/types';
-import { buildSpectateSocketProtocols, buildSpectateSocketUrl } from '../../lib/websocket/spectateSocket';
+import { buildSpectateSocketAuthMessage, buildSpectateSocketUrl } from '../../lib/websocket/spectateSocket';
 import FlappyBotsCanvas from './FlappyBotsCanvas';
 
 const TOKEN_RECOVERY_REASONS = new Set(['TOKEN_REPLAYED', 'TOKEN_EXPIRED', 'TOKEN_NOT_FOUND', 'INVALID_TOKEN']);
@@ -114,18 +114,22 @@ export default function FlappyBotsSpectate() {
         sessionId: handshake.sessionId,
         token: handshake.token,
         slug: handshake.slug,
-      }),
-      buildSpectateSocketProtocols(handshake.token)
+      })
     );
     wsRef.current = ws;
     ws.onopen = () => {
       if (wsKey !== wsKeyRef.current) return;
-      setStatus('connected');
+      ws.send(buildSpectateSocketAuthMessage(handshake.token));
     };
     ws.onmessage = (evt) => {
       if (wsKey !== wsKeyRef.current) return;
       try {
         const msg = JSON.parse(String(evt.data ?? ''));
+        if (msg?.t === 'hello') {
+          setStatus('connected');
+          setError('');
+          return;
+        }
         if (msg?.t === 'frame') setFrame(msg.frame ?? null);
       } catch {
         // ignore

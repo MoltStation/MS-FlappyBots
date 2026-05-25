@@ -1,4 +1,4 @@
-import { buildSessionWsProtocols, buildSessionWsUrl } from '../api/sessions';
+import { buildSessionWsAuthMessage, buildSessionWsUrl } from '../api/sessions';
 import { GAME_SLUG } from '../game/constants';
 
 export function buildRuntimeSocketUrl({
@@ -15,6 +15,6 @@ export function buildRuntimeSocketUrl({
   return buildSessionWsUrl({ wsBase, slug, mode: 'play', sessionId, token });
 }
 
-export function buildRuntimeSocketProtocols(token: string) {
-  return buildSessionWsProtocols(token);
+export function buildRuntimeSocketAuthMessage(token: string) {
+  return buildSessionWsAuthMessage(token);
 }

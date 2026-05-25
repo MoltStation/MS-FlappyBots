@@ -17,6 +17,6 @@ export function buildSessionWsUrl({
   return url.toString();
 }
 
-export function buildSessionWsProtocols(token: string) {
-  return ['molt-v1', `molt-token.${token}`];
+export function buildSessionWsAuthMessage(token: string) {
+  return JSON.stringify({ t: 'auth', token });
 }
