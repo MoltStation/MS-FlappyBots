@@ -21,7 +21,7 @@ export default function FlappyBotsCanvas({ frame }: { frame: FlappyFrame | null 
   const [viewport, setViewport] = useState(getViewportRect);
 
   const botStyle = useMemo(() => {
-    if (!frame) return undefined;
+    if (!frame?.bot) return undefined;
     const size = BOT_RADIUS * 4.6 * viewport.scale;
     return {
       width: `${size}px`,

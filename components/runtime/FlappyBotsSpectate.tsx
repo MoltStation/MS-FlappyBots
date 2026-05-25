@@ -17,6 +17,37 @@ type SpectateHandshake = {
   slug: string;
 };
 
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isFlappyFrame(value: unknown): value is FlappyFrame {
+  if (!value || typeof value !== 'object') return false;
+  const frame = value as Partial<FlappyFrame>;
+  const bot = frame.bot as Partial<FlappyFrame['bot']> | undefined;
+  const score = frame.score as Partial<FlappyFrame['score']> | undefined;
+  const observation = frame.observation as Partial<FlappyFrame['observation']> | undefined;
+
+  return (
+    frame.v === 1 &&
+    (frame.phase === 'ready' || frame.phase === 'running' || frame.phase === 'ended') &&
+    isFiniteNumber(frame.tick) &&
+    isFiniteNumber(frame.tMs) &&
+    Boolean(bot) &&
+    isFiniteNumber(bot?.x) &&
+    isFiniteNumber(bot?.y) &&
+    isFiniteNumber(bot?.rotation) &&
+    Boolean(score) &&
+    isFiniteNumber(score?.current) &&
+    isFiniteNumber(score?.high) &&
+    Boolean(observation) &&
+    isFiniteNumber(observation?.botY) &&
+    isFiniteNumber(observation?.botVelocityY) &&
+    Array.isArray(frame.obstacles) &&
+    Array.isArray(frame.events)
+  );
+}
+
 function resolveBootstrapParentOrigin() {
   if (typeof document === 'undefined') return '';
   try {
@@ -130,7 +161,12 @@ export default function FlappyBotsSpectate() {
           setError('');
           return;
         }
-        if (msg?.t === 'frame') setFrame(msg.frame ?? null);
+        if (msg?.t === 'frame') {
+          const nextFrame = msg.frame ?? null;
+          if (isFlappyFrame(nextFrame)) {
+            setFrame(nextFrame);
+          }
+        }
       } catch {
         // ignore
       }

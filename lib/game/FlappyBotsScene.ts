@@ -176,13 +176,13 @@ export function createFlappyBotsPhaserGame({
     const frame = getFrame();
     if (!frame) return;
     if (objects.bot) {
-      objects.bot.setPosition(frame.bot.x, frame.bot.y);
-      objects.bot.setRotation(frame.bot.rotation);
+      objects.bot.setPosition(frame.bot?.x ?? BOT_X, frame.bot?.y ?? DESIGN_HEIGHT * 0.46);
+      objects.bot.setRotation(frame.bot?.rotation ?? 0);
       objects.bot.setAlpha(frame.phase === 'ended' ? 0.62 : 1);
     }
 
     const nextIds = new Set<string>();
-    for (const obstacle of frame.obstacles) {
+    for (const obstacle of Array.isArray(frame.obstacles) ? frame.obstacles : []) {
       nextIds.add(obstacle.id);
       let gate = objects.gates.get(obstacle.id);
       if (!gate) {
