@@ -169,6 +169,27 @@ body {
   pointer-events: auto;
 }
 
+.flappybots-test-actions .flappybots-button {
+  border-color: rgba(255, 218, 88, 0.9);
+  background:
+    linear-gradient(180deg, rgba(255, 223, 89, 0.98), rgba(255, 176, 43, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(7, 17, 31, 0.45),
+    0 8px 22px rgba(0, 0, 0, 0.36),
+    0 0 18px rgba(69, 240, 255, 0.28);
+  color: #061526;
+  font-weight: 900;
+  text-shadow: none;
+}
+
+.flappybots-test-actions .flappybots-button:hover,
+.flappybots-test-actions .flappybots-button:focus-visible {
+  border-color: rgba(100, 245, 255, 0.95);
+  background:
+    linear-gradient(180deg, rgba(91, 243, 255, 0.98), rgba(255, 216, 84, 0.98));
+  outline: none;
+}
+
 .flappybots-hud-top,
 .flappybots-stat {
   display: flex;

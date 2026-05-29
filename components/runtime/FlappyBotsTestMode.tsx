@@ -9,6 +9,7 @@ import FlappyBotsCanvas from './FlappyBotsCanvas';
 export default function FlappyBotsTestMode() {
   const engineRef = useRef(new FlappyBotsEngine('test-mode'));
   const runningRef = useRef(false);
+  const accumulatorRef = useRef(0);
   const [frame, setFrame] = useState<FlappyFrame>(() => engineRef.current.getFrame());
   const [started, setStarted] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
@@ -22,6 +23,7 @@ export default function FlappyBotsTestMode() {
   const startRun = useCallback(() => {
     if (engineRef.current.isGameOver()) return;
     runningRef.current = true;
+    accumulatorRef.current = 0;
     setStarted(true);
     engineRef.current.applyAction('FLAP');
     publishFrame(engineRef.current.getFrame());
@@ -39,6 +41,7 @@ export default function FlappyBotsTestMode() {
 
   const restart = useCallback(() => {
     runningRef.current = false;
+    accumulatorRef.current = 0;
     engineRef.current.resetSession(`test-${Date.now()}`);
     setStarted(false);
     publishFrame(engineRef.current.getFrame());
@@ -96,13 +99,25 @@ export default function FlappyBotsTestMode() {
   useEffect(() => {
     let rafId = 0;
     let previousT = window.performance.now();
-    const maxDtMs = Math.floor(1000 / TICK_HZ);
+    const fixedDtMs = Math.floor(1000 / TICK_HZ);
 
     const tick = (now: number) => {
-      const dtMs = Math.max(0, Math.min(maxDtMs, now - previousT));
+      const elapsedMs = Math.max(0, Math.min(250, now - previousT));
       previousT = now;
       if (runningRef.current) {
-        publishFrame(engineRef.current.step(dtMs));
+        accumulatorRef.current += elapsedMs;
+        let nextFrame: FlappyFrame | null = null;
+        let steps = 0;
+        while (accumulatorRef.current >= fixedDtMs && steps < 6) {
+          nextFrame = engineRef.current.step(fixedDtMs);
+          accumulatorRef.current -= fixedDtMs;
+          steps += 1;
+          if (nextFrame.phase === 'ended') {
+            accumulatorRef.current = 0;
+            break;
+          }
+        }
+        if (nextFrame) publishFrame(nextFrame);
       }
       rafId = window.requestAnimationFrame(tick);
     };

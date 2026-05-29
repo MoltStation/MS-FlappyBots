@@ -4,11 +4,13 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 const outDir = join(tmpdir(), 'flappybots-engine-check');
+const tscBin = join(process.cwd(), 'node_modules', 'typescript', 'bin', 'tsc');
 
 rmSync(outDir, { recursive: true, force: true });
 execFileSync(
-  './node_modules/.bin/tsc',
+  process.execPath,
   [
+    tscBin,
     'lib/game/FlappyBotsEngine.ts',
     'lib/game/constants.ts',
     'lib/game/rng.ts',
