@@ -158,6 +158,17 @@ body {
   right: 14px;
 }
 
+.flappybots-test-actions {
+  position: absolute;
+  z-index: 22;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  gap: 8px;
+  width: min(300px, calc(100vw - 28px));
+  pointer-events: auto;
+}
+
 .flappybots-hud-top,
 .flappybots-stat {
   display: flex;
@@ -239,16 +250,16 @@ body {
   .flappybots-page--test .flappybots-hud--right {
     top: auto;
     right: 10px;
-    bottom: 10px;
+    bottom: 78px;
     left: 10px;
-    gap: 8px;
-    max-height: 34dvh;
-    overflow: auto;
+    gap: 6px;
+    max-height: none;
+    overflow: visible;
     padding: 10px;
   }
 
   .flappybots-page--test .flappybots-logo--hud {
-    width: 128px;
+    display: none;
   }
 
   .flappybots-page--test .flappybots-note {
@@ -260,18 +271,27 @@ body {
     padding: 8px 10px;
   }
 
+  .flappybots-test-actions {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .flappybots-test-actions .flappybots-button:only-child {
+    grid-column: 1 / -1;
+  }
+
   .flappybots-page--test.is-focus .flappybots-canvas.is-practice canvas {
-    height: calc(100dvh - 82px) !important;
+    height: calc(100dvh - 64px) !important;
   }
 
   .flappybots-page--test.is-focus .flappybots-hud--right {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    max-height: none;
+    bottom: 72px;
   }
 
-  .flappybots-page--test.is-focus .flappybots-logo--hud,
   .flappybots-page--test.is-focus .flappybots-mode-badge,
   .flappybots-page--test.is-focus .flappybots-hud-top,
   .flappybots-page--test.is-focus .flappybots-note {
@@ -301,6 +321,12 @@ body {
   .flappybots-page--test .flappybots-button {
     min-height: 36px;
     padding: 7px 9px;
+  }
+
+  .flappybots-test-actions {
+    right: 8px;
+    bottom: 8px;
+    width: min(240px, 36vw);
   }
 
   .flappybots-page--test .flappybots-hud-top span,

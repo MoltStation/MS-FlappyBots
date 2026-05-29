@@ -12,6 +12,7 @@ export default function FlappyBotsTestMode() {
   const [frame, setFrame] = useState<FlappyFrame>(() => engineRef.current.getFrame());
   const [started, setStarted] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
+  const [fullscreenActive, setFullscreenActive] = useState(false);
 
   const publishFrame = useCallback((nextFrame: FlappyFrame) => {
     setFrame(nextFrame);
@@ -65,10 +66,31 @@ export default function FlappyBotsTestMode() {
     restart();
   }, [restart]);
 
-  const onFocusClick = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
+  const onFocusClick = useCallback(async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
-    setFocusMode((enabled) => !enabled);
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+        setFocusMode(false);
+        return;
+      }
+      await document.documentElement.requestFullscreen();
+      setFocusMode(true);
+    } catch {
+      setFocusMode((enabled) => !enabled);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      const active = Boolean(document.fullscreenElement);
+      setFullscreenActive(active);
+      if (!active) setFocusMode(false);
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    onFullscreenChange();
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
   }, []);
 
   useEffect(() => {
@@ -126,6 +148,8 @@ export default function FlappyBotsTestMode() {
             ? 'Demo scores are local only and are not eligible for official rewards.'
             : 'Press Space, click, or tap the playfield to launch the demo run.'}
         </p>
+      </section>
+      <section className='flappybots-test-actions' onPointerDown={onHudPointerDown}>
         {!started ? (
           <button className='flappybots-button' type='button' onClick={onStartClick}>
             Start Demo
@@ -137,7 +161,7 @@ export default function FlappyBotsTestMode() {
           </button>
         ) : null}
         <button className='flappybots-button' type='button' onClick={onFocusClick}>
-          {focusMode ? 'Normal Screen' : 'Full Screen'}
+          {focusMode || fullscreenActive ? 'Normal Screen' : 'Full Screen'}
         </button>
       </section>
     </main>
