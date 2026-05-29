@@ -4,8 +4,23 @@ import { createFlappyBotsPhaserGame } from '../../lib/game/FlappyBotsScene';
 import { BOT_RADIUS, DESIGN_HEIGHT, DESIGN_WIDTH } from '../../lib/game/constants';
 import type { FlappyFrame } from '../../lib/game/types';
 
-function getViewportRect() {
+type CanvasDisplayMode = 'contain' | 'practice' | 'practiceFocus';
+
+function getViewportRect(displayMode: CanvasDisplayMode) {
   if (typeof window === 'undefined') return { scale: 1, x: 0, y: 0 };
+  const isPortrait = window.innerHeight > window.innerWidth;
+  if ((displayMode === 'practice' || displayMode === 'practiceFocus') && isPortrait && window.innerWidth <= 760) {
+    const targetHeight =
+      displayMode === 'practiceFocus'
+        ? Math.max(280, window.innerHeight - 82)
+        : Math.max(280, Math.min(window.innerHeight * 0.66, window.innerHeight - 210));
+    const scale = Math.max(window.innerWidth / DESIGN_WIDTH, targetHeight / DESIGN_HEIGHT);
+    return {
+      scale,
+      x: 0,
+      y: 8,
+    };
+  }
   const scale = Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT);
   return {
     scale,
@@ -14,11 +29,17 @@ function getViewportRect() {
   };
 }
 
-export default function FlappyBotsCanvas({ frame }: { frame: FlappyFrame | null }) {
+export default function FlappyBotsCanvas({
+  frame,
+  displayMode = 'contain',
+}: {
+  frame: FlappyFrame | null;
+  displayMode?: CanvasDisplayMode;
+}) {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<any>(null);
   const frameRef = useRef<FlappyFrame | null>(frame);
-  const [viewport, setViewport] = useState(getViewportRect);
+  const [viewport, setViewport] = useState(() => getViewportRect(displayMode));
 
   const botStyle = useMemo(() => {
     if (!frame?.bot) return undefined;
@@ -36,11 +57,15 @@ export default function FlappyBotsCanvas({ frame }: { frame: FlappyFrame | null 
   }, [frame]);
 
   useEffect(() => {
-    const onResize = () => setViewport(getViewportRect());
+    const onResize = () => setViewport(getViewportRect(displayMode));
     onResize();
     window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, [displayMode]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -71,7 +96,11 @@ export default function FlappyBotsCanvas({ frame }: { frame: FlappyFrame | null 
 
   return (
     <>
-      <div className='flappybots-canvas' ref={parentRef} aria-hidden='true' />
+      <div
+        className={`flappybots-canvas ${displayMode !== 'contain' ? 'is-practice' : ''}`}
+        ref={parentRef}
+        aria-hidden='true'
+      />
       {botStyle ? <div className='flappybots-dom-bot' style={botStyle} aria-hidden='true' /> : null}
     </>
   );

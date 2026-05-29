@@ -11,6 +11,7 @@ export default function FlappyBotsTestMode() {
   const runningRef = useRef(false);
   const [frame, setFrame] = useState<FlappyFrame>(() => engineRef.current.getFrame());
   const [started, setStarted] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
 
   const publishFrame = useCallback((nextFrame: FlappyFrame) => {
     setFrame(nextFrame);
@@ -64,6 +65,12 @@ export default function FlappyBotsTestMode() {
     restart();
   }, [restart]);
 
+  const onFocusClick = useCallback((evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    setFocusMode((enabled) => !enabled);
+  }, []);
+
   useEffect(() => {
     let rafId = 0;
     let previousT = window.performance.now();
@@ -95,8 +102,10 @@ export default function FlappyBotsTestMode() {
   }, [flap]);
 
   return (
-    <main className='flappybots-page' onPointerDown={onPlayfieldPointerDown}>
-      <FlappyBotsCanvas frame={frame} />
+    <main
+      className={`flappybots-page flappybots-page--test ${focusMode ? 'is-focus' : ''}`}
+      onPointerDown={onPlayfieldPointerDown}>
+      <FlappyBotsCanvas frame={frame} displayMode={focusMode ? 'practiceFocus' : 'practice'} />
       <section className='flappybots-hud flappybots-hud--right' onPointerDown={onHudPointerDown}>
         <img className='flappybots-logo flappybots-logo--hud' src='/assets/flappybots/logo.png' alt='Flappy Bots' />
         <div className='flappybots-mode-badge'>TEST MODE</div>
@@ -127,6 +136,9 @@ export default function FlappyBotsTestMode() {
             Restart Demo
           </button>
         ) : null}
+        <button className='flappybots-button' type='button' onClick={onFocusClick}>
+          {focusMode ? 'Normal Screen' : 'Full Screen'}
+        </button>
       </section>
     </main>
   );
